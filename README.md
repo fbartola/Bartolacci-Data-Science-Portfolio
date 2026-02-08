@@ -22,7 +22,7 @@ To maintain an organized repository, everything will be **color-coded** and and 
   notebook and turn it into a student-made textbook that is modeled after my personal
   preferences and successful learning/studying habits. 
 
-##Curent Projects
+## Curent Projects
 
 - Basic Streamlit App 
 
