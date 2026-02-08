@@ -21,3 +21,13 @@ To maintain an organized repository, everything will be **color-coded** and and 
   to track when and what was learned. Overall, I hope to utilize GitHub as a digital
   notebook and turn it into a student-made textbook that is modeled after my personal
   preferences and successful learning/studying habits. 
+
+##Curent Projects
+
+- Basic Streamlit App 
+
+📂 **Project Folder:**  
+[`basic_streamlit_app/`](basic_streamlit_app)
+
+📄 **Project README:**  
+[View detailed app description and run instructions](basic_streamlit_app/README.md)
