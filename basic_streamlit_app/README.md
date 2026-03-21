@@ -2,13 +2,13 @@
 
 This project is a basic Streamlit app created for the Introduction to Data Science course for Portfolio Update #1.
 
-The app demonstrates loading a CSV file dataset and useing Streamlit to build an data interface for exploring and filtering the data.
+The app demonstrates loading a CSV dataset and using Streamlit to build a data interface for exploring and filtering the data.
 
-The dataset contains species, islands, and bill length & depth among other metrics.
+The dataset contains species, islands, and bill length & depth, among other metrics.
 
 ## Features
 
-- This app displays a title and short description 
+- This app displays a title and a short description 
 - Loads the CSV file into a pandas DataFrame
 - Shows the dataset in an interactive table
 - Allows user to:
