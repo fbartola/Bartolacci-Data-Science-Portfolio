@@ -1,0 +1,132 @@
+# Part 1
+
+import pandas as pd
+from sklearn.datasets import fetch_california_housing
+
+# Load the housing dataset
+housing = fetch_california_housing()
+
+X = pd.DataFrame(housing.data, columns=housing.feature_names) 
+y = pd.Series(housing.target, name='med_house_value')
+
+print("First five rows:")
+print(X.head())
+
+print("\nMissing values per column:")
+print(X.isnull().sum())
+
+print("\nSummary statistics:")
+print(X.describe())
+
+# Part 2
+
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, root_mean_squared_error, r2_score
+
+feature_vars = X.columns.tolist()
+
+X = pd.DataFrame(X[feature_vars])
+y = pd.Series(y, name="med_house_value")
+
+
+# Display preview
+print("Dataset preview:")
+print(X.head())
+
+print("\nTarget variable preview:")
+print(y.head())
+
+# Split the dataset into training and test sets (80% training, 20% testing)
+X_train_raw, X_test_raw, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Train a linear regression model on the unscaled data
+lin_reg_raw = LinearRegression()
+lin_reg_raw.fit(X_train_raw, y_train)
+
+# Make predictions on the test set
+y_pred_raw = lin_reg_raw.predict(X_test_raw)
+
+# Evaluate model performance
+
+# MSE
+mse_raw = mean_squared_error(y_test, y_pred_raw)
+
+#RMSE
+rmse_raw = root_mean_squared_error(y_test, y_pred_raw)
+
+# R² Score
+r2_raw = r2_score(y_test, y_pred_raw)
+
+print("\nUnscaled Data Model:")
+print(f"Mean Squared Error: {mse_raw:.2f}")
+print(f"Root Squared Error: {rmse_raw:.2f}")
+print(f"R² Score: {r2_raw:.2f}")
+
+# Model Coefficients for Q2 (below)
+print("Model Coefficients (Unscaled):")
+print(pd.Series(lin_reg_raw.coef_,
+                index=X.columns))
+
+print("\nModel Intercept (Unscaled):")
+print(pd.Series(lin_reg_raw.intercept_))
+
+# Interpretation Questions 
+
+# 1. What does the R² score tell us about model performance?
+    # The R² score tells us the variance in the target variable accounted for by the model. A higher R² score means the model is better fit. Considering this 
+    # data, it would seem the model accounts for ~57.58% of the variance. In this specific case, the R² score is accounting for the variance in median house 
+    # relative to the baseline value. The model is a moderate fit.
+
+# 2. Which features seem to have the strongest impact on predictions based on the model’s coefficients?
+    # Based on the model coefficients, it would seem that AveBedrms has the strongest impact on predictions because it has the largest magnitude. The impact 
+    # is positive because the coefficient is positive. MedInc also has a substantial impact, however, ~0.783 is much greater than ~0.449.
+
+# 3. How well do the predicted values match the actual values?
+    # Since the model's R² score is ~0.5758, the predicted values are a moderate fit to the actual values. This would mean ~58% of the variation in the median 
+    # house value is explained by the linear regression model. 
+
+
+# Part 3 
+
+# Select three strongest features (based on coefficients)
+selected_features = ["AveBedrms", "Latitude", "Longitude"]
+
+X_simple = X[selected_features]
+
+# Split data (80/20)
+X_train_simple, X_test_simple, y_train, y_test = train_test_split(
+    X_simple, y, test_size=0.2, random_state=42
+)
+
+# Train simplified linear regression model
+lin_reg_simple = LinearRegression()
+lin_reg_simple.fit(X_train_simple, y_train)
+
+# Predictions
+y_pred_simple = lin_reg_simple.predict(X_test_simple)
+
+# Evaluate performance
+mse_simple = mean_squared_error(y_test, y_pred_simple)
+rmse_simple = root_mean_squared_error(y_test, y_pred_simple)
+r2_simple = r2_score(y_test, y_pred_simple)
+
+print("Simplified Model Performance:")
+print(f"Mean Squared Error: {mse_simple:.2f}")
+print(f"Root Mean Squared Error: {rmse_simple:.2f}")
+print(f"R² Score: {r2_simple:.2f}")
+
+# Interpretation Questions
+
+# 1. How does the simplified model compare to the full model?
+    # The simplified model has a smaller R² score of 0.25, meaning that it performs worse than that of the full model (R² score of 0.58).
+    # The simplified model only accounts for 25% of variation. This is most likely due to the fact that we used less variables so the 
+    # simplified model has less information to explain the variation in housing prices compared to the full model. 
+
+# 2. Would you use this simplified model in practice? Why or why not?
+    # In this case you could use the simplified model (even though the R² score is smaller) if you wanted to look directly at 3 specific
+    # variables. However, using the full model will provide the most accuracy with prediction since it has the most amount of input 
+    # information and data. 
