@@ -31,3 +31,21 @@ To maintain an organized repository, everything will be **color-coded** and and 
 
 📄 **Project README:**  
 [View detailed app description and run instructions](basic_streamlit_app/README.md)
+
+- Tidy Data Project
+
+📂 **Project Folder:**  
+[`tidy_data_project/`](tidy_data_project)
+
+📄 **Project README:**  
+[View detailed app description and run instructions](tidy_data_project/README.md)
+
+
+- ML Streamlit App
+
+📂 **Project Folder:**  
+[`MLStreamlitApp/`](MLStreamlitApp)
+
+📄 **Project README:**  
+[View detailed app description and run instructions](MLStreamlitApp/README.md)
+
