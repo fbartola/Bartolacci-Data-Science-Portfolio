@@ -3,16 +3,20 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+
 from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_score, 
                              roc_curve, auc, confusion_matrix, 
                              mean_squared_error, mean_absolute_error, r2_score)
 from sklearn.datasets import load_iris, load_diabetes, load_breast_cancer
+
 # Page Config
 st.set_page_config(page_title="Supervised ML Playground", page_icon="🧠", layout="wide")
+
 # Custom CSS for premium feel
 st.markdown("""
 <style>
@@ -59,11 +63,13 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
 st.title("🧠 Supervised Machine Learning Playground")
 st.markdown("""
 Welcome to the interactive Machine Learning playground! Select a dataset, configure hyperparameters, 
 and observe how your choices affect the model's performance. Perfect for intuition building and exploration.
 """)
+
 # ---- Sidebar Controls ----
 with st.sidebar:
     st.header("⚙️ Configuration")
@@ -103,6 +109,7 @@ with st.sidebar:
             st.success("File uploaded successfully!")
             target_col = st.selectbox("Select Target Variable", df.columns)
             problem_type = st.radio("Select Problem Type", ("Classification", "Regression"))
+            
     if df is not None:
         st.subheader("2. Model Selection")
         if problem_type == "Classification":
@@ -125,6 +132,7 @@ with st.sidebar:
             hyperparameters = {'n_estimators': n_estimators, 'max_depth': max_depth}
         
         run_btn = st.button("🚀 Train Model")
+
 # ---- Main Content Area ----
 if df is not None:
     st.header("📊 Dataset Overview")
@@ -159,100 +167,109 @@ if df is not None:
         X_test_scaled = scaler.transform(X_test)
         
         # Model Training 
+        training_successful = False
         with st.spinner("Training model..."):
-            if model_algo == "Logistic Regression":
-                model = LogisticRegression(C=hyperparameters['C'], max_iter=hyperparameters['max_iter'], random_state=42)
-            elif model_algo == "Random Forest Classifier":
-                model = RandomForestClassifier(n_estimators=hyperparameters['n_estimators'], max_depth=hyperparameters['max_depth'], random_state=42)
-            elif model_algo == "Linear Regression":
-                model = LinearRegression()
-            elif model_algo == "Random Forest Regressor":
-                model = RandomForestRegressor(n_estimators=hyperparameters['n_estimators'], max_depth=hyperparameters['max_depth'], random_state=42)
-                
-            model.fit(X_train_scaled, y_train)
-            y_pred = model.predict(X_test_scaled)
-            
-            st.toast("Model Trained Successfully!", icon='🎉')
-            
-        # Display Metrics
-        st.subheader("Performance Metrics")
-        
-        if problem_type == "Classification":
-            acc = accuracy_score(y_test, y_pred)
-            prec = precision_score(y_test, y_pred, average='weighted', zero_division=0)
-            rec = recall_score(y_test, y_pred, average='weighted', zero_division=0)
-            f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
-            
-            m_col1, m_col2, m_col3, m_col4 = st.columns(4)
-            def metric_box(col, title, value):
-                col.markdown(f'<div class="metric-container"><div class="metric-title">{title}</div><div class="metric-value">{value:.4f}</div></div>', unsafe_allow_html=True)
-            metric_box(m_col1, "Accuracy", acc)
-            metric_box(m_col2, "Precision", prec)
-            metric_box(m_col3, "Recall", rec)
-            metric_box(m_col4, "F1-Score", f1)
-            
-            st.subheader("Visualizations")
-            v_col1, v_col2 = st.columns(2)
-            
-            with v_col1:
-                st.write("**Confusion Matrix**")
-                cm = confusion_matrix(y_test, y_pred)
-                fig_cm, ax_cm = plt.subplots(figsize=(5,4))
-                sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax_cm)
-                ax_cm.set_xlabel('Predicted')
-                ax_cm.set_ylabel('Actual')
-                st.pyplot(fig_cm)
-                
-            with v_col2:
-                # ROC Curve if binary classification
-                if len(np.unique(y)) == 2 and hasattr(model, "predict_proba"):
-                    st.write("**ROC Curve**")
-                    # Assuming positive label is the second class from unique sorting
-                    pos_label = np.unique(y)[1] 
-                    y_test_binary = (y_test == pos_label).astype(int)
-                    # For getting positive class probabilities if it's binary
-                    if hasattr(model, "classes_"):
-                        pos_class_index = np.where(model.classes_ == pos_label)[0][0]
-                        y_prob = model.predict_proba(X_test_scaled)[:, pos_class_index]
-                    else:
-                        y_prob = model.predict_proba(X_test_scaled)[:, 1]
-                        
-                    fpr, tpr, thresholds = roc_curve(y_test_binary, y_prob)
-                    roc_auc = auc(fpr, tpr)
+            try:
+                if model_algo == "Logistic Regression":
+                    model = LogisticRegression(C=hyperparameters['C'], max_iter=hyperparameters['max_iter'], random_state=42)
+                elif model_algo == "Random Forest Classifier":
+                    model = RandomForestClassifier(n_estimators=hyperparameters['n_estimators'], max_depth=hyperparameters['max_depth'], random_state=42)
+                elif model_algo == "Linear Regression":
+                    model = LinearRegression()
+                elif model_algo == "Random Forest Regressor":
+                    model = RandomForestRegressor(n_estimators=hyperparameters['n_estimators'], max_depth=hyperparameters['max_depth'], random_state=42)
                     
-                    fig_roc, ax_roc = plt.subplots(figsize=(5,4))
-                    ax_roc.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC AUC = {roc_auc:.2f}')
-                    ax_roc.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-                    ax_roc.set_xlim([0.0, 1.0])
-                    ax_roc.set_ylim([0.0, 1.05])
-                    ax_roc.set_xlabel('False Positive Rate')
-                    ax_roc.set_ylabel('True Positive Rate')
-                    ax_roc.legend(loc="lower right")
-                    st.pyplot(fig_roc)
-                else:
-                    st.info("ROC Curve is only plotted for binary classification with probability estimates.")
-        else: # Regression
-            mse = mean_squared_error(y_test, y_pred)
-            mae = mean_absolute_error(y_test, y_pred)
-            rmse = np.sqrt(mse)
-            r2 = r2_score(y_test, y_pred)
+                model.fit(X_train_scaled, y_train)
+                y_pred = model.predict(X_test_scaled)
+                
+                st.toast("Model Trained Successfully!", icon='🎉')
+                training_successful = True
+                
+            except ValueError as e:
+                st.error("🚨 There was an issue training the model!")
+                st.warning(f"**Error Details:** {e}")
+                st.info("💡 **Tip:** This usually happens if you've selected **Classification** for a target column that contains continuous, numerical data. Try switching the Problem Type to **Regression** in the sidebar!")
+                
+        if training_successful:
+            # Display Metrics
+            st.subheader("Performance Metrics")
             
-            m_col1, m_col2, m_col3, m_col4 = st.columns(4)
-            def metric_box(col, title, value):
-                col.markdown(f'<div class="metric-container"><div class="metric-title">{title}</div><div class="metric-value">{value:.4f}</div></div>', unsafe_allow_html=True)
-            metric_box(m_col1, "MSE", mse)
-            metric_box(m_col2, "RMSE", rmse)
-            metric_box(m_col3, "MAE", mae)
-            metric_box(m_col4, "R² Score", r2)
-            
-            st.subheader("Visualizations")
-            st.write("**Actual vs Predicted**")
-            fig_reg, ax_reg = plt.subplots(figsize=(8,5))
-            ax_reg.scatter(y_test, y_pred, alpha=0.6, color='#3282b8')
-            # Draw y=x line properly
-            min_val = min(y_test.min(), y_pred.min())
-            max_val = max(y_test.max(), y_pred.max())
-            ax_reg.plot([min_val, max_val], [min_val, max_val], 'r--', lw=2)
-            ax_reg.set_xlabel('Actual Values')
-            ax_reg.set_ylabel('Predicted Values')
-            st.pyplot(fig_reg)
+            if problem_type == "Classification":
+                acc = accuracy_score(y_test, y_pred)
+                prec = precision_score(y_test, y_pred, average='weighted', zero_division=0)
+                rec = recall_score(y_test, y_pred, average='weighted', zero_division=0)
+                f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
+                
+                m_col1, m_col2, m_col3, m_col4 = st.columns(4)
+                def metric_box(col, title, value):
+                    col.markdown(f'<div class="metric-container"><div class="metric-title">{title}</div><div class="metric-value">{value:.4f}</div></div>', unsafe_allow_html=True)
+                metric_box(m_col1, "Accuracy", acc)
+                metric_box(m_col2, "Precision", prec)
+                metric_box(m_col3, "Recall", rec)
+                metric_box(m_col4, "F1-Score", f1)
+                
+                st.subheader("Visualizations")
+                v_col1, v_col2 = st.columns(2)
+                
+                with v_col1:
+                    st.write("**Confusion Matrix**")
+                    cm = confusion_matrix(y_test, y_pred)
+                    fig_cm, ax_cm = plt.subplots(figsize=(5,4))
+                    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax_cm)
+                    ax_cm.set_xlabel('Predicted')
+                    ax_cm.set_ylabel('Actual')
+                    st.pyplot(fig_cm)
+                    
+                with v_col2:
+                    # ROC Curve if binary classification
+                    if len(np.unique(y)) == 2 and hasattr(model, "predict_proba"):
+                        st.write("**ROC Curve**")
+                        # Assuming positive label is the second class from unique sorting
+                        pos_label = np.unique(y)[1] 
+                        y_test_binary = (y_test == pos_label).astype(int)
+                        # For getting positive class probabilities if it's binary
+                        if hasattr(model, "classes_"):
+                            pos_class_index = np.where(model.classes_ == pos_label)[0][0]
+                            y_prob = model.predict_proba(X_test_scaled)[:, pos_class_index]
+                        else:
+                            y_prob = model.predict_proba(X_test_scaled)[:, 1]
+                            
+                        fpr, tpr, thresholds = roc_curve(y_test_binary, y_prob)
+                        roc_auc = auc(fpr, tpr)
+                        
+                        fig_roc, ax_roc = plt.subplots(figsize=(5,4))
+                        ax_roc.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC AUC = {roc_auc:.2f}')
+                        ax_roc.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+                        ax_roc.set_xlim([0.0, 1.0])
+                        ax_roc.set_ylim([0.0, 1.05])
+                        ax_roc.set_xlabel('False Positive Rate')
+                        ax_roc.set_ylabel('True Positive Rate')
+                        ax_roc.legend(loc="lower right")
+                        st.pyplot(fig_roc)
+                    else:
+                        st.info("ROC Curve is only plotted for binary classification with probability estimates.")
+            else: # Regression
+                mse = mean_squared_error(y_test, y_pred)
+                mae = mean_absolute_error(y_test, y_pred)
+                rmse = np.sqrt(mse)
+                r2 = r2_score(y_test, y_pred)
+                
+                m_col1, m_col2, m_col3, m_col4 = st.columns(4)
+                def metric_box(col, title, value):
+                    col.markdown(f'<div class="metric-container"><div class="metric-title">{title}</div><div class="metric-value">{value:.4f}</div></div>', unsafe_allow_html=True)
+                metric_box(m_col1, "MSE", mse)
+                metric_box(m_col2, "RMSE", rmse)
+                metric_box(m_col3, "MAE", mae)
+                metric_box(m_col4, "R² Score", r2)
+                
+                st.subheader("Visualizations")
+                st.write("**Actual vs Predicted**")
+                fig_reg, ax_reg = plt.subplots(figsize=(8,5))
+                ax_reg.scatter(y_test, y_pred, alpha=0.6, color='#3282b8')
+                # Draw y=x line properly
+                min_val = min(y_test.min(), y_pred.min())
+                max_val = max(y_test.max(), y_pred.max())
+                ax_reg.plot([min_val, max_val], [min_val, max_val], 'r--', lw=2)
+                ax_reg.set_xlabel('Actual Values')
+                ax_reg.set_ylabel('Predicted Values')
+                st.pyplot(fig_reg)
