@@ -14,10 +14,8 @@ from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_s
                              mean_squared_error, mean_absolute_error, r2_score)
 from sklearn.datasets import load_iris, load_diabetes, load_breast_cancer
 
-# Page Config
 st.set_page_config(page_title="Supervised ML Playground", page_icon="🧠", layout="wide")
 
-# Custom CSS for premium feel
 st.markdown("""
 <style>
     .stApp {
@@ -70,7 +68,6 @@ Welcome to the interactive Machine Learning playground! Select a dataset, config
 and observe how your choices affect the model's performance. Perfect for intuition building and exploration.
 """)
 
-# ---- Sidebar Controls ----
 with st.sidebar:
     st.header("⚙️ Configuration")
     
@@ -120,7 +117,7 @@ with st.sidebar:
         st.subheader("3. Hyperparameters")
         test_size = st.slider("Test Set Size (%)", 10, 50, 20, 5) / 100.0
         
-        # Algorithm specific hyperparameters
+    
         hyperparameters = {}
         if model_algo == "Logistic Regression":
             C_val = st.slider("Regularization Inverse (C)", 0.01, 10.0, 1.0, 0.01)
@@ -133,7 +130,6 @@ with st.sidebar:
         
         run_btn = st.button("🚀 Train Model")
 
-# ---- Main Content Area ----
 if df is not None:
     st.header("📊 Dataset Overview")
     
