@@ -9,7 +9,7 @@
 
 > *An interactive web application built with Streamlit to visually explore and intuition-build around supervised machine learning models.*
 
-**[🚀 Play with the Live App Here!](#)** *(<-- Update with your link)*
+**[🚀 Play with the Live App Here!](https://bartolacci-data-science-portfolio-lkmfmnwxdcsj3y5odkaqqz.streamlit.app/)** *(<-- Update with your link)*
 
 ---
 
@@ -29,8 +29,8 @@ Make sure you have Python 3.8+ installed. You'll need the following core librari
 
 1️⃣ **Clone the repository**
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/francescabartolacci/Bartolacci-Data-Science-Portfolio.git
+cd Bartolacci-Data-Science-Portfolio
 ```
 
 2️⃣ **Install dependencies**
