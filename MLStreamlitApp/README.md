@@ -9,7 +9,7 @@
 
 > *An interactive web application built with Streamlit to visually explore and intuition-build around supervised machine learning models.*
 
-**[🚀 Play with the Live App Here!](https://bartolacci-data-science-portfolio-lkmfmnwxdcsj3y5odkaqqz.streamlit.app/)** *(<-- Update with your link)*
+**[🚀 Play with the Live App Here!](https://bartolacci-data-science-portfolio-lkmfmnwxdcsj3y5odkaqqz.streamlit.app/)**
 
 ---
 
@@ -57,14 +57,20 @@ Easily adjust settings via sidebar sliders to see real-time updates:
 🟣 **Classification**
 - **Logistic Regression:**
   - *Tunable:* Regularization (`C`), Test Split Size
+  - *Hyperparameter Details:* The **C (Regularization Inverse)** parameter controls how much the model is penalized for having large weights. A smaller `C` increases regularization, helping to prevent overfitting by making the model simpler.
+
 - **Random Forest Classifier:**
   - *Tunable:* Number of Trees, Max Depth, Test Split Size
+  - *Hyperparameter Details:* **Number of Trees** determines how many decision trees are built; more trees typically increase accuracy and stability but take longer to train. **Max Depth** controls how deep each tree can grow; limiting depth helps prevent the model from memorizing the training data (overfitting).
 
 🟢 **Regression**
 - **Linear Regression:**
   - *Tunable:* Test Split Size
+  - *Hyperparameter Details:* Linear Regression is a straightforward model with no core hyperparameters to tune besides how much data is held out for the test set.
+
 - **Random Forest Regressor:**
   - *Tunable:* Number of Trees, Max Depth, Test Split Size
+  - *Hyperparameter Details:* Similar to classification, tuning **Number of Trees** and **Max Depth** allows you to balance between a model that captures complex non-linear trends and one that generalizes well to unseen data.
 
 
 ---

@@ -111,8 +111,16 @@ with st.sidebar:
         st.subheader("2. Model Selection")
         if problem_type == "Classification":
             model_algo = st.selectbox("Select Algorithm", ("Logistic Regression", "Random Forest Classifier"))
+            if model_algo == "Logistic Regression":
+                st.info("💡 **Logistic Regression** is a linear model used for binary or multi-class classification. It estimates probabilities using a logistic function. Great for linearly separable data.")
+            else:
+                st.info("💡 **Random Forest** is an ensemble method that builds multiple decision trees and merges them together for a more accurate and stable prediction. It handles non-linear relationships well.")
         else:
             model_algo = st.selectbox("Select Algorithm", ("Linear Regression", "Random Forest Regressor"))
+            if model_algo == "Linear Regression":
+                st.info("💡 **Linear Regression** is a simple model that assumes a linear relationship between the input features and the target continuous variable.")
+            else:
+                st.info("💡 **Random Forest Regressor** uses an ensemble of decision trees to predict continuous values, capturing complex non-linear relationships without assuming linearity.")
             
         st.subheader("3. Hyperparameters")
         test_size = st.slider("Test Set Size (%)", 10, 50, 20, 5) / 100.0
@@ -120,12 +128,14 @@ with st.sidebar:
     
         hyperparameters = {}
         if model_algo == "Logistic Regression":
-            C_val = st.slider("Regularization Inverse (C)", 0.01, 10.0, 1.0, 0.01)
-            max_iter = st.number_input("Max Iterations", 100, 1000, 200, 50)
+            st.markdown("**Hyperparameter Tuning:**")
+            C_val = st.slider("Regularization Inverse (C)", 0.01, 10.0, 1.0, 0.01, help="Smaller values specify stronger regularization, preventing overfitting by penalizing large coefficients. Play with this to see how it affects accuracy on the test set!")
+            max_iter = st.number_input("Max Iterations", 100, 1000, 200, 50, help="Maximum number of iterations taken for the solvers to converge. If the model fails to converge, try increasing this.")
             hyperparameters = {'C': C_val, 'max_iter': max_iter}
         elif model_algo == "Random Forest Classifier" or model_algo == "Random Forest Regressor":
-            n_estimators = st.slider("Number of Trees", 10, 500, 100, 10)
-            max_depth = st.slider("Max Depth", 1, 50, 10, 1)
+            st.markdown("**Hyperparameter Tuning:**")
+            n_estimators = st.slider("Number of Trees", 10, 500, 100, 10, help="The number of trees in the forest. More trees usually improve performance and stabilize predictions, but slow down training.")
+            max_depth = st.slider("Max Depth", 1, 50, 10, 1, help="The maximum depth of the tree. Decreasing this limits the complexity of the model to prevent overfitting, while increasing it allows the model to learn more complex patterns.")
             hyperparameters = {'n_estimators': n_estimators, 'max_depth': max_depth}
         
         run_btn = st.button("🚀 Train Model")
@@ -244,6 +254,17 @@ if df is not None:
                         st.pyplot(fig_roc)
                     else:
                         st.info("ROC Curve is only plotted for binary classification with probability estimates.")
+                        
+                st.markdown("---")
+                st.markdown("#### 📖 How to Interpret These Metrics")
+                st.markdown("""
+                - **Accuracy**: The overall percentage of correct predictions. (Formula: Correct / Total)
+                - **Precision**: Out of all the positive predictions made, how many were actually correct? *Helps understand false positives.*
+                - **Recall**: Out of all actual positive cases, how many did we correctly identify? *Helps understand false negatives.*
+                - **F1-Score**: A balanced metric combining both precision and recall. Useful when classes are imbalanced.
+                - **Confusion Matrix**: Shows exactly where the model is confusing classes (e.g., predicting Class 1 when it's actually Class 0).
+                - **ROC Curve & AUC**: Visualizes the trade-off between the True Positive Rate and False Positive Rate. An Area Under the Curve (AUC) closer to 1.0 indicates an excellent model, while 0.5 is a random guess.
+                """)
             else: # Regression
                 mse = mean_squared_error(y_test, y_pred)
                 mae = mean_absolute_error(y_test, y_pred)
@@ -269,3 +290,13 @@ if df is not None:
                 ax_reg.set_xlabel('Actual Values')
                 ax_reg.set_ylabel('Predicted Values')
                 st.pyplot(fig_reg)
+
+                st.markdown("---")
+                st.markdown("#### 📖 How to Interpret These Metrics")
+                st.markdown("""
+                - **MSE (Mean Squared Error)**: The average of the squared differences between predicted and actual values. It heavily penalizes larger errors.
+                - **RMSE (Root Mean Squared Error)**: The square root of MSE. This brings the error back to the original units of the target variable, making it easier to understand.
+                - **MAE (Mean Absolute Error)**: The average absolute difference between predicted and actual values. It is less sensitive to extreme outliers than RMSE.
+                - **R² Score**: Represents the proportion of variance in the dependent variable that is predictable from the independent variables. **1.0 is a perfect prediction**, while 0.0 means the model is no better than simply predicting the mean every time.
+                - **Actual vs Predicted Plot**: If the model is perfect, all blue dots will fall exactly on the red dashed diagonal line (where Actual = Predicted). Deviations from the line show prediction errors.
+                """)
